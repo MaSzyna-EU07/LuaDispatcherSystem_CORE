@@ -1,3 +1,5 @@
+local Severity = require("lua.core.Utils.LogSeverity")
+
 ---Functions for dealing with logs.
 local LogUtils = {}
 
@@ -11,10 +13,10 @@ function LogUtils.write(text, severity, weight)
 	if LogUtils.verboseValue >= (weight or 1) then
 		if _API then
 			-- Server mode
-			_API:log("LuaDispatcher -> [" .. (severity or _Severity.DEBUG) .. "] " .. text)
+			_API:log("LuaDispatcher -> [" .. (severity or Severity.DEBUG) .. "] " .. text)
 		else
 			-- Client mode
-			print("LuaDispatcher -> [" .. (severity or _Severity.DEBUG) .. "] " .. text)
+			print("LuaDispatcher -> [" .. (severity or Severity.DEBUG) .. "] " .. text)
 		end
 	end
 end

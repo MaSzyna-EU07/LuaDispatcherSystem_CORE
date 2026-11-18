@@ -42,7 +42,7 @@ because the files load each other by that path.
 
 The shared code does not load these itself. The server and the client each define them before the code runs.
 
-- Globals: `_Utils` (`utils.lua`), `_Dir` (`Utils/DirUtils.lua`), `_TileDB` (a `TileDatabase`), `_Severity` (a `LogSeverity`), `_Log` with `write(text, severity, weight)`,
+- Globals: `_Utils` (`utils.lua`), `_Dir` (`Utils/DirUtils.lua`), `_TileDB` (a `TileDatabase`), `_Log` with `write(text, severity, weight)`,
   `_Obj` (the track, switch and semaphore states) and `_Com` (communication with the other side).
 - Enums: `Speed`, `SemaphoreType`, `PathMode`.
 - The object that owns the tiles (the server's `Schematic`, the client's `Station`) has `shortcut`, `getTile(x, y)`,

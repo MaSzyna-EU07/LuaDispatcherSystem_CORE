@@ -1,5 +1,6 @@
 local Class = require("lua.core.class")
 local TrackFollowerSwitchPolicy = require("lua.core.Pathfinder.TrackFollowerSwitchPolicy")
+local Severity = require("lua.core.Utils.LogSeverity")
 
 ---This is a simple class which wraps logic associated with "I want to see what's 5 tiles away" and can be utilized for scanning or other stuff.
 ---Think of it as a board game pawn which can move around the station schematics.
@@ -66,7 +67,7 @@ function TrackFollower:step()
     if self.tile:isExitPoint() then
         local destination = self.tile:getWarpDestination()
         if not destination then
-            _Log.write("Warp destination not found (dir=" .. self.direction .. ")", _Severity.FAIL, 2)
+            _Log.write("Warp destination not found (dir=" .. self.direction .. ")", Severity.FAIL, 2)
             -- Tile does not lead to a valid destination. End the scan here.
             return false
         end
@@ -74,7 +75,7 @@ function TrackFollower:step()
         -- The exit can be anywhere on the new schematic, and at any angle too!
         self.direction = self.tile:getWarpExitDirection()
         if not self.direction then
-            _Log.write(string.format("No direction to go towards - probably an improperly set exit tile at %s", self.tile:getLocation()), _Severity.FAIL, 2)
+            _Log.write(string.format("No direction to go towards - probably an improperly set exit tile at %s", self.tile:getLocation()), Severity.FAIL, 2)
             return false
         end
     else
@@ -95,7 +96,7 @@ function TrackFollower:step()
     local nextTile = self.tile:getNeighbor(self.direction)
     if not nextTile then
         -- We've reached the edge of the schematic. Dead end.
-        _Log.write("No nextTile (dir=" .. self.direction .. ")", _Severity.FAIL, 2)
+        _Log.write("No nextTile (dir=" .. self.direction .. ")", Severity.FAIL, 2)
         return false
     end
     self.tile = nextTile
