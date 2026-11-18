@@ -1,8 +1,8 @@
-local class = require("lua.core.class")
+local Class = require("lua.core.class")
 
 ---@class Tile : Class
 ---@overload fun(schematic: Schematic, x: integer, y: integer): Tile
-local Tile = class:derive("Tile")
+local Tile = Class:derive("Tile")
 
 ---Creates a new Tile.
 ---The schematic is the server's `Schematic` or the client's `Station`. Either one has to provide:

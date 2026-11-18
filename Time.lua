@@ -1,10 +1,10 @@
-local class = require "lua.core.class"
+local Class = require("lua.core.class")
 
 ---@class Time
 ---@overload fun(data: {d: integer?, h: integer, m: integer, s: number?}?): Time
 ---@operator add(Time|number): Time
 ---@operator sub(Time|number): Time
-local Time = class:derive("Time")
+local Time = Class:derive("Time")
 
 function Time:new(data)
 	self.d = data and data.d or 0
