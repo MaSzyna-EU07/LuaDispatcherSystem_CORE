@@ -71,10 +71,10 @@ function Pathfinder:findPath()
     while true do
         local result = self:findPathStep()
         if result == false then
-            _Log.write("Path not found!", Severity.FAIL, 1)
+            _Log.write("Path not found!", _Severity.FAIL, 1)
             return
         elseif result == true then
-            _Log.write("Path found!", Severity.SUCCESS, 1)
+            _Log.write("Path found!", _Severity.SUCCESS, 1)
             break
         end
         -- Infinite loop check
@@ -84,9 +84,9 @@ function Pathfinder:findPath()
 
     -- If we've got here, we've found the path !!
     local path = assert(self:getPath(self.target))
-    _Log.write("Path found:", Severity.SUCCESS, 1)
+    _Log.write("Path found:", _Severity.SUCCESS, 1)
     for i, node in ipairs(path) do
-        _Log.write(string.format("    %s: pos=%s,%s dirs=%s,%s", i, node.tile.x, node.tile.y, node.dir1, node.dir2), Severity.SUCCESS, 1)
+        _Log.write(string.format("    %s: pos=%s,%s dirs=%s,%s", i, node.tile.x, node.tile.y, node.dir1, node.dir2), _Severity.SUCCESS, 1)
     end
     return path
 end
