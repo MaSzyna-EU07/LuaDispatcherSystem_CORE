@@ -221,10 +221,17 @@ end
 ---@param sourceDir integer The direction from which we are going from.
 ---@return integer?
 function Tile:getNextTrackDirection(sourceDir)
-	for i = 1, 8 do
-		if i ~= sourceDir and self:hasTraversibleTrackInDirection(i) then
-			return i
-		end
+	local straight = _Dir.invertDir(sourceDir)
+	if self:hasTraversibleTrackInDirection(straight) then
+		return straight
+	end
+	local left = (straight - 2) % 8 + 1
+	if self:hasTraversibleTrackInDirection(left) then
+		return left
+	end
+	local right = straight % 8 + 1
+	if self:hasTraversibleTrackInDirection(right) then
+		return right
 	end
 end
 
