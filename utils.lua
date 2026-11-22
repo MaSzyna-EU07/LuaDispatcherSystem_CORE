@@ -562,7 +562,7 @@ function utils.strSplit(s, k)
 	local result = {}
 	local l = k:len()
 	while true do
-		local n = s:find("%" .. k)
+		local n = s:find(k, 1, true)
 		if n then
 			table.insert(result, s:sub(1, n - 1))
 			s = s:sub(n + l)
