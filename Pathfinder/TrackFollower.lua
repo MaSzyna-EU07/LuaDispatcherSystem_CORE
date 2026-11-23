@@ -21,6 +21,7 @@ function TrackFollower:new(start, direction)
     self.path = {}
 
     self.switchPolicy = TrackFollowerSwitchPolicy.NORMAL
+    self.switchForceStop = false
     self.pathRecording = false
 end
 
@@ -28,6 +29,12 @@ end
 ---@param switchPolicy TrackFollowerSwitchPolicy The new policy to be obeyed.
 function TrackFollower:setSwitchPolicy(switchPolicy)
     self.switchPolicy = switchPolicy
+end
+
+---Sets whether going the wrong way compared to the current switch position should stop the follower.
+---@param switchForceStop boolean If `true`, the follower will stop on a tile crossing which would virtually force the switch to the other direction.
+function TrackFollower:setSwitchForceStop(switchForceStop)
+    self.switchForceStop = switchForceStop
 end
 
 ---Sets whether this Track Follower is going to record the list of tiles it went through and directions.
@@ -61,6 +68,10 @@ function TrackFollower:step()
     end
     if self.switchPolicy == TrackFollowerSwitchPolicy.STOP_DIVERGING and #self.tile:getPossibleTrackDirections(sourceDir) > 1 then
         -- Stopped by a diverging switch
+        return false
+    end
+    if self.switchForceStop and self.tile:isSwitch() and not self.tile:hasTraversibleTrackInDirection(sourceDir) then
+        -- Stopped by the switch switched the other way
         return false
     end
     -- Check if we are on a warp/exit tile and if so, perform the warp.

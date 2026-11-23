@@ -151,7 +151,7 @@ end
 ---@return number
 function Pathfinder:getHeuristic(tile)
     local dx, dy = math.abs(self.target.x - tile.x), math.abs(self.target.y - tile.y)
-    return (dx + dy) * 2
+    return math.sqrt(dx * dx + dy * dy) * 2
 end
 
 ---Returns the next unexplored tile with the lowest cost.
