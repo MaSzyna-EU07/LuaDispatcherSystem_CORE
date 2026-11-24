@@ -74,21 +74,22 @@ function TrackFollower:step()
         -- Stopped by the switch switched the other way
         return false
     end
-    -- Check if we are on a warp/exit tile and if so, perform the warp.
-    if self.tile:isExitPoint() then
+    -- Check if we are on a warp/exit tile and we are not heading out of it, and if so, perform the warp.
+    if self.tile:isExitPoint() and self.tile:getWarpExitDirection() ~= self.direction then
         local destination = self.tile:getWarpDestination()
         if not destination then
             _Log.write("Warp destination not found (dir=" .. self.direction .. ")", Severity.FAIL, 2)
             -- Tile does not lead to a valid destination. End the scan here.
             return false
         end
-        self.tile = destination
         -- The exit can be anywhere on the new schematic, and at any angle too!
-        self.direction = self.tile:getWarpExitDirection()
-        if not self.direction then
-            _Log.write(string.format("No direction to go towards - probably an improperly set exit tile at %s", self.tile:getLocation()), Severity.FAIL, 2)
+        local dir = destination:getWarpExitDirection()
+        if not dir then
+            _Log.write(string.format("No direction to go towards - probably an improperly set exit tile at %s", destination:getLocation()), Severity.FAIL, 2)
             return false
         end
+        self.tile = destination
+        self.direction = dir
     else
         -- Determine the next direction in a classic way. Remember to follow the policy!
         local dir
