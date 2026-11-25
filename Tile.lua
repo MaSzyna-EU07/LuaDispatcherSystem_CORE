@@ -1,5 +1,7 @@
 local Class = require("lua.core.class")
 local Severity = require("lua.core.Utils.LogSeverity")
+local PathMode = require("lua.core.Enums.PathMode")
+local SemaphoreType = require("lua.core.Enums.SemaphoreType")
 
 ---@class Tile : Class
 ---@overload fun(schematic: Schematic, x: integer, y: integer): Tile

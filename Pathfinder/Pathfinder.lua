@@ -2,6 +2,9 @@ local Class = require("lua.core.class")
 local TrackFollower = require("lua.core.Pathfinder.TrackFollower")
 local Itinerary = require("lua.core.Pathfinder.Itinerary")
 local Severity = require("lua.core.Utils.LogSeverity")
+local PathMode = require("lua.core.Enums.PathMode")
+local SemaphoreType = require("lua.core.Enums.SemaphoreType")
+local Speed = require("lua.core.Enums.Speed")
 
 ---@class Pathfinder : Class
 ---@overload fun(start: Tile, target: Tile): Pathfinder

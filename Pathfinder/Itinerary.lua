@@ -1,4 +1,5 @@
 local Class = require("lua.core.class")
+local Speed = require("lua.core.Enums.Speed")
 
 ---A tile-agnostic class which is the result of pathfinding.
 ---Itineraries are currently fully transient; this might change in the future but without compromising the automation (i.e. caching is a viable option).
