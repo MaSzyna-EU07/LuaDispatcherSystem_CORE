@@ -73,15 +73,15 @@ end
 ---@return boolean
 function Itinerary:canBeDispatched()
     -- All tracks must be clear.
-    for track, _ in pairs(self.tracks) do
-        local state = _Obj:getTrackState(track)
+    for trackID, _ in pairs(self.tracks) do
+        local track = _Obj:getTrack(trackID)
         -- Ms2 allows tracks to be occupied, but any reserved track will fail the check no matter what.
-        if state and ((state.occupied and self.speed ~= Speed.MS2) or state.reserved) then
-            _Log.write(string.format("Cannot dispatch itinerary from %s: track %s is occupied", self.semaphore, track))
+        if track and ((track.occupied and self.speed ~= Speed.MS2) or track.reserved) then
+            _Log.write(string.format("Cannot dispatch itinerary from %s: track %s is occupied", self.semaphore, trackID))
             return false
         end
-        if not state then
-            _Log.write(string.format("WARNING: track `%s` not controlled!", track))
+        if not track then
+            _Log.write(string.format("WARNING: track `%s` not controlled!", trackID))
         end
     end
     -- We cannot switch a switch when a train is under it.

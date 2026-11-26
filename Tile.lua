@@ -170,7 +170,7 @@ function Tile:hasTraversibleTrackInDirection(dir)
 		-- This direction is not governed by the switch.
 		return true
 	end
-	local switchState = self:getSwitchState(self:flipSwitchSuffix(dirData:sub(1, #dirData - 1)))
+	local switchState = self:getSwitch(self:flipSwitchSuffix(dirData:sub(1, #dirData - 1)))
 	local expectedState = dirData:sub(#dirData) == "+"
 	return switchState == nil or (switchState.state ~= self.switchFlip) == expectedState
 end
@@ -291,63 +291,47 @@ function Tile:isPathModeAllowed(mode)
 	return true
 end
 
----Returns the current track state in the simulation.
+---Returns the track object in the simulation.
 ---If no track ID is specified for this tile, the function will return `nil`.
----@return TrackState?
-function Tile:getTrackState()
-	return self.trackID and _Obj:getTrackState(self.trackID)
-end
-
----Returns the current track reservation state in the simulation.
----If no track ID is specified for this tile, the function will return `nil`.
----Client only: the server's `Objects` does not keep this state.
----@return TrackReservationState?
-function Tile:getTrackReservationState()
-	return self.trackID and _Obj:getTrackReservationState(self.trackID)
-end
-
----Returns the current vehicles on this track in the simulation.
----If no track ID is specified for this tile, the function will return `nil`.
----Client only: the server's `Objects` does not keep this state.
----@return table<string, integer>?
-function Tile:getTrackVehicleState()
-	return self.trackID and _Obj:getTrackVehicleState(self.trackID)
+---@return Track?
+function Tile:getTrack()
+	return self.trackID and _Obj:getTrack(self.trackID)
 end
 
 ---Returns whether this tile's track is occupied, or `nil` if no track is specified for this tile.
 ---@return boolean?
 function Tile:isTrackOccupied()
-	local state = self:getTrackState()
-	return state and state.occupied
+	local track = self:getTrack()
+	return track and track.occupied
 end
 
 ---Returns whether this tile's track is reserved, or `nil` if no track is specified for this tile.
 ---@return boolean?
 function Tile:isTrackReserved()
-	local state = self:getTrackState()
-	return state and state.reserved
+	local track = self:getTrack()
+	return track and track.reserved
 end
 
 ---Returns whether this tile's track is neither occupied nor reserved, or `nil` if no track is specified for this tile.
 ---@return boolean?
 function Tile:isTrackClear()
-	local state = self:getTrackState()
-	return state and not (state.occupied or state.reserved)
+	local track = self:getTrack()
+	return track and not (track.occupied or track.reserved)
 end
 
----Returns the state for this tile's switch, or `nil` if no switch is specified for this tile.
+---Returns this tile's switch, or `nil` if no switch is specified for this tile.
 ---@param suffix "ab"|"cd"? Used for double switches, where the suffix determines which subswitch state should be returned.
----@return SwitchState?
-function Tile:getSwitchState(suffix)
-	return self.switchID and _Obj:getSwitchState(self.switchID .. (suffix or ""))
+---@return Switch?
+function Tile:getSwitch(suffix)
+	return self.switchID and _Obj:getSwitch(self.switchID .. (suffix or ""))
 end
 
 ---Returns whether this tile's switch has been forcefully switched, or `nil` if no switch is specified for this tile.
 ---@return boolean?
 function Tile:isSwitchForced()
-	local main = self:getSwitchState()
-	local ab = self:getSwitchState("ab")
-	local cd = self:getSwitchState("cd")
+	local main = self:getSwitch()
+	local ab = self:getSwitch("ab")
+	local cd = self:getSwitch("cd")
 	return (main and main.forced) or (ab and ab.forced) or (cd and cd.forced)
 end
 
@@ -365,24 +349,24 @@ function Tile:getSemaphorePrevTrackID()
 	return prevTile and prevTile.trackID
 end
 
----Returns this tile's semaphore state, or `nil` if no semaphore is specified for this tile.
----@return SemaphoreState?
-function Tile:getSemaphoreState()
-	return self.semaphoreID and _Obj:getSemaphoreState(self.semaphoreID)
+---Returns this tile's semaphore, or `nil` if no semaphore is specified for this tile.
+---@return Semaphore?
+function Tile:getSemaphore()
+	return self.semaphoreID and _Obj:getSemaphore(self.semaphoreID)
 end
 
 ---Returns whether this tile's semaphore is displaying a stop signal (S1 or Ms1), or `nil` if there's no semaphore.
 ---@return boolean?
 function Tile:isSemaphoreStop()
-	local state = self:getSemaphoreState()
-	return state and (state.image == "s1" or state.image == "ms1")
+	local semaphore = self:getSemaphore()
+	return semaphore and semaphore:isStop()
 end
 
 ---Returns whether this tile's semaphore is currently not displaying anything, or `nil` if there's no semaphore.
 ---@return boolean?
 function Tile:isSemaphoreDim()
-	local state = self:getSemaphoreState()
-	return state and state.image == "uszk"
+	local semaphore = self:getSemaphore()
+	return semaphore and semaphore:isDim()
 end
 
 ---Returns whether any itinerary can ever be reserved by this semaphore.
@@ -397,19 +381,18 @@ function Tile:getBlockadeDirection()
 	return self:getData().blockade
 end
 
----Returns this tile's blockade state, or `nil` if no semaphore is specified for this tile.
----Client only: the server's `Objects` does not keep this state.
----@return BlockadeState?
-function Tile:getBlockadeState()
-	return self.blockadeID and _Obj:getBlockadeState(self.blockadeID)
+---Returns this tile's blockade, or `nil` if no blockade is specified for this tile.
+---@return Blockade?
+function Tile:getBlockade()
+	return self.blockadeID and _Obj:getBlockade(self.blockadeID)
 end
 
 ---Returns the current maximum speed on this Tile, or `nil` if there is no speed limit.
 ---@return number
 function Tile:getSpeed()
-	local main = self:getSwitchState()
-	local ab = self:getSwitchState("ab")
-	local cd = self:getSwitchState("cd")
+	local main = self:getSwitch()
+	local ab = self:getSwitch("ab")
+	local cd = self:getSwitch("cd")
 	return self:getSpeedForSwitchStates({[""] = main and main.state, ab = ab and ab.state, cd = cd and cd.state})
 end
 
