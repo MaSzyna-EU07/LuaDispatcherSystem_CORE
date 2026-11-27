@@ -19,6 +19,7 @@ function Pathfinder:new(start, target)
     self.speed = 160
     self.mode = PathMode.TRAIN
     self.electrified = false
+    self.ignoreOccupied = false
 
     -- TODO: Incorporate this for faster lowest cost search?
     self.possibilitySortFn = function(a, b) return a.cost < b.cost end
@@ -40,6 +41,13 @@ end
 ---@param electrified boolean The electrification mode to be set.
 function Pathfinder:setElectrified(electrified)
     self.electrified = electrified
+end
+
+---Sets whether this Pathfinder should ignore the current track state (occupation or reservation).
+---Useful if you want to find itineraries now and store them for later or partially dispatch a train.
+---@param ignoreOccupied boolean Whether the occupancy should be ignored.
+function Pathfinder:setIgnoreOccupied(ignoreOccupied)
+    self.ignoreOccupied = ignoreOccupied
 end
 
 ---Creates the initial possibility starting from this Pathfinder's first tile.
@@ -182,14 +190,16 @@ function Pathfinder:canEnterTile(tile, prevTile)
         _Log.write(string.format("At %s: Empty tile!", tile:getLocation()))
         return false
     end
-    if self.mode == PathMode.TRAIN and tile:isTrackClear() == false then
-        -- The track is for sure occupied when in train mode.
-        _Log.write(string.format("At %s: Track occupied!", tile:getLocation()))
-        return false
-    elseif self.mode == PathMode.SHUNT and tile:isTrackClear() and prevTile and prevTile:isTrackClear() == false then
-        -- We went past the occupied segment when shunting. Unfortunately current technology doesn't permit us to jump over a train...
-        _Log.write(string.format("At %s: Went past a train in shunting mode!", tile:getLocation()))
-        return false
+    if not self.ignoreOccupied then
+        if self.mode == PathMode.TRAIN and tile:isTrackClear() == false then
+            -- The track is for sure occupied when in train mode.
+            _Log.write(string.format("At %s: Track occupied!", tile:getLocation()))
+            return false
+        elseif self.mode == PathMode.SHUNT and tile:isTrackClear() and prevTile and prevTile:isTrackClear() == false then
+            -- We went past the occupied segment when shunting. Unfortunately current technology doesn't permit us to jump over a train...
+            _Log.write(string.format("At %s: Went past a train in shunting mode!", tile:getLocation()))
+            return false
+        end
     end
     if not tile:isPathModeAllowed(self.mode) then
         -- The track is not allowing this dispatching mode (i.e. forbids shunting or trains)

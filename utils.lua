@@ -513,8 +513,9 @@ function utils.numifyKeys(t)
 end
 
 ---Returns a list of all keys in table `t`, sorted alphabetically.
----@param t table The table from which the keys will be sourced.
----@return table
+---@generic T
+---@param t table<T, any> The table from which the keys will be sourced.
+---@return T[]
 function utils.tableGetSortedKeys(t)
 	local keys = {}
 	for k, v in pairs(t) do
