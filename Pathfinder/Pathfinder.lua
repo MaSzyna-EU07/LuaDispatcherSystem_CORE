@@ -46,7 +46,7 @@ end
 ---@private
 function Pathfinder:createInitialPossibility()
     assert(_Utils.tableIsEmpty(self.tiles), "Attempted to create initial possibilities for a non-empty pathfinder!")
-    local dirFrom = assert(self.start:getSemaphoreDirection(), "First tile must be a semaphore! (if you're reading this that means it isn't lol)")
+    local dirFrom = assert(self.start:getSemaphoreDirection() or self.start:getWarpExitDirection(), string.format("First tile %s must be a semaphore or an exit! (if you're reading this that means it isn't lol)", self.start:getLocation()))
     self.tiles[self.start] = {cost = {base = 0, speedPenaltyMult = 1, heuristic = self:getHeuristic(self.start), total = self:getHeuristic(self.start)}, explored = false, speed = math.huge, dirFrom = _Dir.invertDir(dirFrom)}
 end
 
@@ -75,10 +75,10 @@ function Pathfinder:findPath()
     while true do
         local result = self:findPathStep()
         if result == false then
-            _Log.write("Path not found!", Severity.FAIL, 1)
+            _Log.write(string.format("Path from %s to %s not found!", self.start:getLocation(), self.target:getLocation()), Severity.FAIL, 1)
             return
         elseif result == true then
-            _Log.write("Path found!", Severity.SUCCESS, 1)
+            _Log.write(string.format("Path from %s to %s found!", self.start:getLocation(), self.target:getLocation()), Severity.SUCCESS, 1)
             break
         end
         -- Infinite loop check
@@ -88,9 +88,9 @@ function Pathfinder:findPath()
 
     -- If we've got here, we've found the path !!
     local path = assert(self:getPath(self.target))
-    _Log.write("Path found:", Severity.SUCCESS, 1)
+    --_Log.write("Path found:", Severity.SUCCESS, 1)
     for i, node in ipairs(path) do
-        _Log.write(string.format("    %s: pos=%s,%s dirs=%s,%s", i, node.tile.x, node.tile.y, node.dir1, node.dir2), Severity.SUCCESS, 1)
+        --_Log.write(string.format("    %s: pos=%s,%s dirs=%s,%s", i, node.tile.x, node.tile.y, node.dir1, node.dir2), Severity.SUCCESS, 1)
     end
     return path
 end
@@ -234,7 +234,7 @@ function Pathfinder:extendPath(path)
     follower:stepUntil(function(tile) return tile ~= self.start and tile:isSemaphore() and (tile:getSemaphoreDirection() == follower.direction or (self.mode == PathMode.SHUNT and not tile.semaphoreAllowShunt and tile:getSemaphoreDirection() ~= follower.direction)) end)
     -- Add the traversed tiles to the path.
     for i, node in ipairs(follower:getPath()) do
-        _Log.write(string.format("%s : %s,%s", node.tile:getLocation(), node.dir1 or "-", node.dir2 or "-"))
+        --_Log.write(string.format("%s : %s,%s", node.tile:getLocation(), node.dir1 or "-", node.dir2 or "-"))
         if i == 1 then
             path[#path].dir2 = node.dir2
         else
